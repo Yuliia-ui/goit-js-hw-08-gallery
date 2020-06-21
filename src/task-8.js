@@ -2,39 +2,66 @@ import galleryItems from './gallery-items.js';
 
 const refs = {
   gallery: document.querySelector('.js-gallery'),
-  modal: document.querySelector('.js-lightbox'),
-  content: document.querySelector('.lightbox__content'),
-  image: document.querySelector('.lightbox__image'),
-  button: document.querySelector('.lightbox__button'),
+  openModalBtn: document.querySelector('.js-lightbox'),
+  contentModal: document.querySelector('.lightbox__content'),
+  imageModal: document.querySelector('.lightbox__image'),
+  closeModalBtn: document.querySelector('button[data-action="close-lightbox"]'),
 };
 
 refs.gallery.addEventListener('click', handleClick);
-refs.content.addEventListener('click', handleOverlay);
-refs.button.addEventListener('click', handleClose);
+refs.contentModal.addEventListener('click', handleOverlay);
+refs.closeModalBtn.addEventListener('click', handleClose);
 
-const createGallery = image => {
-  const containerRef = document.createElement('li');
-  containerRef.classList.add('gallery__item');
-
-  const linkRef = document.createElement('a');
-  linkRef.classList.add('gallery__link');
-
-  const imgRef = document.createElement('img');
-  imgRef.classList.add('gallery__image');
-  imgRef.src = image.preview;
-  imgRef.dataSource = image.original;
-  imgRef.alt = image.description;
-
-  containerRef.append(linkRef, imgRef);
-  return containerRef;
-};
-
-const imageGallery = images
+const listImage = images
   .map(
-    image => `li class="gallery__item"><a class="gallery__link">
-  <img class="gallery__image" src=${image.preview} alt="${image.description}" 
-  dataSource="${image.original}></a></li>`,
+    image => `<li class="gallery__item">
+<a
+  class="gallery__link"
+  href="${img.original}">
+  <img
+    class="gallery__image"
+    src="${img.preview}"
+    data-source="${img.original}"
+    alt="${img.description}"
+  />
+</a>
+</li>`,
   )
   .join('');
 
-refs.insertAdjacentHTML('afterbegin', imageGallery);
+refs.gallery.insertAdjacentHTML('beforeend', listImage);
+
+function handleClick(e) {
+  e.preventDefault();
+  if (e.target === e.currentTarget) {
+    return;
+  }
+
+  refs.imageModal.src = event.target.dataset.source;
+  refs.imageModal.alt = event.target.getAttribute('alt');
+  refs.openModalBtn.classList.add('is-open');
+  window.addEventListener('keydown', handleKeyPress);
+}
+
+function handleClose() {
+  refs.openModalBtn.classList.remove('is-open');
+  refs.imageVodal.src = '';
+  refs.imageModal.alt = '';
+  window.removeEventListener('keydown', handleKeyPress);
+}
+
+function handleOverlay(event) {
+  if (event.target !== event.currentTarget) {
+    return;
+  }
+
+  handleClose();
+}
+
+function handleKeyPress(event) {
+  if (event.code !== 'Escape') {
+    return;
+  }
+
+  handleClose();
+}
