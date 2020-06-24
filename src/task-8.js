@@ -12,24 +12,27 @@ refs.gallery.addEventListener('click', handleClick);
 refs.contentModal.addEventListener('click', handleOverlay);
 refs.closeModalBtn.addEventListener('click', handleClose);
 
-const listImage = images
-  .map(
-    image => `<li class="gallery__item">
+const listGallery = galleryItems.reduce((acc, item) => {
+  const itemGallery = `<li class="gallery__item">
 <a
   class="gallery__link"
-  href="${img.original}">
+  href="${item.original}"
+>
   <img
     class="gallery__image"
-    src="${img.preview}"
-    data-source="${img.original}"
-    alt="${img.description}"
+    src="${item.preview}"
+    data-source="${item.original}"
+    alt="${item.description}"
   />
 </a>
-</li>`,
-  )
-  .join('');
+</li>`;
 
-refs.gallery.insertAdjacentHTML('beforeend', listImage);
+  acc += itemGallery;
+
+  return acc;
+}, '');
+
+refs.gallery.insertAdjacentHTML('beforeend', listGallery);
 
 function handleClick(e) {
   e.preventDefault();
